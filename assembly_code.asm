@@ -1,40 +1,41 @@
 .data
-str1:	.asciiz	"\n1.Print a triangle.\n"
+triangle_string:	.asciiz	"\n1.Number-Triangle mode\n"
 	.align 2
-str2:	.asciiz	"2.Number analyzation.\n"
+number_check_string:	.asciiz	"2.Nuber-Check\n"
 	.align 2
-str3:	.asciiz	"3.Array of numbers.\n"
+array_multiply_string:	.asciiz	"3.Array Multiplier.\n"
 	.align 2
-str4:	.asciiz	"4.Exit the program.\n"
+exit_string:	.asciiz	"4.Exit the program.\n"
 	.align 2
-str5:	.asciiz "Please enter your choice (1-4):\n "
+enter_choice_string:	.asciiz "Please enter your choice (1-4):\n "
 	.align 2
-strend: .asciiz "\nYour selected to exit the programe.See you later!:)\n"
+end_choice_string: .asciiz "\nYour selected to exit the programe.See you later!:)\n"
 	.align 2
-strc1: .asciiz "\nYour selection is to print a Triangle!\n"
-strc2: .asciiz "\nYour selection is to analyze a Number!\n"
-strc3: .asciiz "\nYour selection is to enter 5 numbers and take back them myltiplade by 5\n"
-strnot: .asciiz "\nPleaze enter a number from 1-4\n"
+triangle_choice_string: .asciiz "\nYour selection is to print a Triangle!\n"
+analyze_choice_string: .asciiz "\nYour selection is to analyze a Number!\n"
+multiplication_choice_string: .asciiz "\nYour selection is to enter 5 numbers and take back them myltiplade by 5\n"
+error_string: .asciiz "\nPleaze enter a number from 1-4\n"
 	
 
 
 .text
+##################################################################
 main:	
 loop:
 	li $v0,4		
-	la $a0,str1		
+	la $a0,triangle_string		
 	syscall			
 	
-	la $a0,str2		
+	la $a0,number_check_string		
 	syscall			
 	
-	la $a0,str3		
+	la $a0,array_multiply_string		
 	syscall
 	
-	la $a0,str4		
+	la $a0,exit_string		
 	syscall
 
-	la $a0,str5		
+	la $a0,enter_choice_string		
 	syscall
 	
 	li $v0,5		
@@ -43,40 +44,40 @@ loop:
 
 	
 	
-	beq $s0,1,loop1
+	beq $s0,1,choice_loop1
 
-	beq $s0,2,loop2
+	beq $s0,2,choice_loop2
 
-	beq $s0,3,loop3
+	beq $s0,3,choice_loop3
 
 	beq $s0,4,end
-	j loopnotdefined
-	
-loop1:	
+	j error_choice_loop
+################################################################
+choice_loop1:	
 	li $v0,4		
-	la $a0,strc1		
+	la $a0,triangle_choice_string		
 	syscall	
 	j loop
-loop2:	
+choice_loop2:	
 	li $v0,4		
-	la $a0,strc2		
+	la $a0,analyze_choice_string		
 	syscall	
 	j loop
-loop3:	
+choice_loop3:	
 	li $v0,4		
-	la $a0,strc3		
+	la $a0,multiplication_choice_string		
 	syscall	
 	j loop	
 
-loopnotdefined:
+error_choice_loop:
 		
 	li $v0,4		
-	la $a0,strnot		
+	la $a0,error_string		
 	syscall	
 	j loop	
 
 end:	li $v0,4
-	la $a0,strend
+	la $a0,end_choice_string
 	syscall
 	li $v0, 10		
-	syscall
+	syscall#syscall mode 10, exit the program
