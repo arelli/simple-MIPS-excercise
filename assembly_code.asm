@@ -23,6 +23,10 @@ next_line: .asciiz "\n"
 	.align 2
 tab: .asciiz "  " 
 	.align 2
+number_is_even: .asciiz "\nThe number is even \n "
+	.align 2
+number_is_odd: .asciiz "\nThe number is odd\n " 
+	.align 2
 	
 .text
 ##################################################################
@@ -64,6 +68,20 @@ choice_loop2:	#analyze a number
 	li $v0,4		
 	la $a0,analyze_choice_string		
 	syscall	
+	li $v0,5		
+	syscall	
+	move $a0,$v0 #$a0 is the argument passed in check_number function
+	jal check_number
+	beq $v0,$zero,is_even #its essentialy an if/else statement, despite double if in original c lang
+		li $v0,4		
+		la $a0,number_is_odd		
+		syscall	
+		b is_odd #if its odd, it prints it(above) and then exits
+	is_even:
+		li $v0,4		
+		la $a0,number_is_even		
+		syscall	
+	is_odd: #exit of if/else statement
 	j loop
 choice_loop3:	#multiply an array of five, by 4
 	li $v0,4		
@@ -87,6 +105,7 @@ end:	li $v0,4
 ################################################################## 			
 check_number:
 andi $v0,$a0,1#now $v0 holds the return value
+jr $ra
 
 print_triangle:
 li $t0,0 # counter of how many numbers were printed in total(requested return value)
