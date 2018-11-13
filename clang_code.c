@@ -38,7 +38,7 @@ int printTriangle(int a0){
     printf("\n ");
     v0=t0;//t0 is not preserved after the return of the function
     return v0;
-}
+}// better comments on this are in the assembly file
 
 int checkNumber(int a0){
     int v0 = 0;
@@ -90,7 +90,7 @@ int main()
     t5 = n2;
 
     before_while:
-    if(!1) goto after_while;//while(1){ // if(0)
+    if(!1) goto after_while;
         before_choice:
         printf("\n ~~~~~HRY201-Lab3~~~~~~~~");
         printf("\n --------Menu------------");
@@ -101,8 +101,8 @@ int main()
         printf("\n ~~~~~~~~~~~~~~~~~~~~~~~~");
         printf("\n\n  Give your choice: ");
         scanf("%d", &t3);
-		//switch(choice){
-        if (t3 == 1){//case 1:
+	
+        if (t3 == 1){
             printf("\n Give the number of rows you want for your Triangle ");
             printf(" \n        (if you want to exit give -1 or 0):        ");
             scanf("%d", &t4);
@@ -111,20 +111,20 @@ int main()
                 printf("\n  Program Finished!");
                 return 0;
             }
-            t0 = printTriangle(t4);
+            t0 = printTriangle(t4); //t4 should be $a0 in assembly
             printf("\n  The number of printed values is: %d\n", t0);
         }
-        if (t3 == 2){//case 2:
+        if (t3 == 2){
             printf("\n Give the number you want to check: ");
             scanf("%d", &t5);
-            t1 = checkNumber(t5);
+            t1 = checkNumber(t5); //t5 should be $a0 in assembly
             if (t1==0)
                 printf("\n  --> The number is EVEN!\n");
             if (t1==1)
                 printf("\n  --> The number is ODD!\n");
         }
-        if (t3==3){//case 3:
-            t8 = multiplier(t6, t7); // or t8 = multiplier((int*)t6, (int*)t7);
+        if (t3==3){
+            t8 = multiplier(t6, t7); // t6 and t7 should be $a0 and $a1 in assembly
             before_while2:
             if(t2>=5) goto after_while2;
                 printf("\n The number %d multiplied by five is equal to:  %d", *((int*)t6+t2),*((int*)t8+t2));
@@ -133,7 +133,7 @@ int main()
             after_while2:
             printf("\n");
         }
-        if (t3==4){//case 4:
+        if (t3==4){
             printf("\n Programm Finished!\n");
             exit(0);
         }
