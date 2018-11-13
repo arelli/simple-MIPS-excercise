@@ -1,12 +1,16 @@
-#ASSEMBLY CODE FOR LAB 4 IN DIGITAL COMPUTERS, TUC,3RD SEMESTER,2017
-.data
+#ASSEMBLY CODE FOR LAB 4 IN DIGITAL COMPUTERS, TUC,3RD SEMESTER,2018
+#RAFAEL ELLINITAKIS
+#a program that offers a simple numerical choice user menu, offering 4 functions.
+.data #allocation of space and labels for the strings that need to be printed throughout the program
 triangle_string:	.asciiz	"\n1.Number-Triangle mode\n"
 	 .align 2
 number_check_string:	.asciiz	"2.Nuber-Check\n"
 	.align 2
 array_multiply_string:	.asciiz	"3.Array Multiplier.\n"
 	.align 2
-exit_string:	.asciiz	"4.Exit the program.\n"
+exchange_chars:		.asciiz	"4.Uppercase/Loewrcase exchanger.\n"
+	.align 2
+exit_string:	.asciiz	"5.Exit the program.\n"
 	.align 2
 enter_choice_string:	.asciiz "Please enter your choice (1-4):\n "
 	.align 2
@@ -38,32 +42,37 @@ input_string: .space 100
 	.align 2
 output_string: .space 100
 	.align 2
+enter_string: .asciiz "Please enter a string of less-than-100 characters: "
+	.align  2
 	
 .text
 ##################################################################
 			#MAIN
 ##################################################################			
 main:	
-	loop:
+	loop:	#the MENU is printed below
 		li $v0,4		
 		la $a0,triangle_string		
-		syscall		#print the triangle_string in stdout
+		syscall		
 		la $a0,number_check_string		
 		syscall			
 		la $a0,array_multiply_string		
 		syscall
+		la $a0,exchange_chars		
+		syscall
 		la $a0,exit_string		
 		syscall
 		la $a0,enter_choice_string		
-		syscall
+		syscall		#menu stopped printing
 		li $v0,5		
 		syscall		#read a number from keyboard input	
 		move $s0,$v0
-		#beq's represent the switch in c
+		#beq's represent the switch in C
 		beq $s0,1,choice_loop1
 		beq $s0,2,choice_loop2
 		beq $s0,3,choice_loop3
-		beq $s0,4,end
+		beq $s0,4,choice_loop4
+		beq $s0,5,end
 		j error_choice_loop
 	
 	choice_loop1:	#print number triangle
@@ -130,22 +139,42 @@ main:
 			syscall #prints the contents of the array in courrent position
 			li $v0,4 #PRINT STRING mode
 			la $a0,tab
-			syscall #prints 4 spaces between the printed numbers
+			syscall #prints 4 spac	es between the printed numbers
 			addi $t5,$t5,1 #increments counter for the loop
 			addi $t6,$t6,4 #increments our position in the array by four( which is sizeof(int) in the 32-bit-only mips systems)
 			j before_while_multiplier_output
 		after_while_multiplier_output:
 		
 		j loop	#end of the function
-#end of MAIN ###################################################
+		
+	choice_loop4: #here lies the heroic uppercase/lowercase exchange function summoner
+		li $t2,0 #the counter for the loops 
+		li $v0, 4
+		la $a0,enter_string
+		syscall #prompt the user to enter a string
+		li $v0,8 #STRING READ mode
+		la $a0,input_string #specifies the location at which the string is gonna be stored
+		li $a1,100 #specifies the maximum length of the string
+		syscall #actually reads the string from the keyboard, and stores it in input_string
+		la $a0,input_string #setting values to the arguments of low_to_upper_case()
+		la $a1,output_string #same as above
+		jal low_to_upper_case
+		la $a0,output_string
+		li $v0,4
+		syscall #print the altered string
+		j loop
 	
+		
+#this is activated to print an error message for wrong user input format	
 error_choice_loop:
 	li $v0,4		
 	la $a0,error_string		
 	syscall	
 	j loop	
-	
-end:	li $v0,4
+
+#this is activated to just terminate the execution of the program	
+end:	
+	li $v0,4
 	la $a0,end_choice_string
 	syscall
 	li $v0, 10		
@@ -155,6 +184,7 @@ end:	li $v0,4
  			#FUNCTIONS
 ################################################################## 			
 
+#this prints a triangle of numbers(1, 1 2, 1 2 3 etc)
 print_triangle: # $a0 contains the number of lines requested
 	li $t0,0 # counter of how many numbers were printed in total(requested return value)
 	li $t1,0 # line number(incremented in the outter loop)
@@ -184,11 +214,14 @@ print_triangle: # $a0 contains the number of lines requested
 	syscall #printf("\n")
 	move $v0,$t0 #it returns the $v0 by convention for subprogram return registers
 	jr $ra #jump back to where the function was called initially ($ra has the right value because of jal)
-	
+
+#this checks if a number is odd or even, with logical bitwise AND with 1 (we only care about the last bit of the number)
 check_number: # $a0 contains the number which needs to be checked
 	andi $v0,$a0,1#now $v0 holds the return value
 	jr $ra
-	
+
+#this function accepts two array "locations", one for the input array, and one for the output array
+#what it does,is that it multiplies each element of the input by four, and stores it in the output array
 multiplier: # $a0 contains the input_array position, and $a1 contains the output array position
 	la $t0,($a0) #now $t0 has the **input_array** position
 	la $t1,($a1) #and $t1 has the **output_array** position
@@ -205,6 +238,33 @@ multiplier: # $a0 contains the input_array position, and $a1 contains the output
 	after_while_multiplier:
 	jr $ra
 	
+low_to_upper_case: # $a0 has the location of the input_string, and $a1 the location of the output_string
+	la $t0,($a0) # INPUT string
+	la $t1,($a1) #OUTPUT string
+	li $t2,0 #counter for the loop
+	before_while_case:
+	beq $t2,99,after_while_case
+		lb $t3,0($t0) # $t3 has the contents of the $t0'th element of the input_string
+		# ASCII TABLE: from 65 to 90, upperacse, from 97 to 122, lowercase
+		#blt $t3,65,after_else_case #if the ASCII code of the character is less than 65, it is not touched
+#TODO: I need to add a way to avoid tweaking the values of characters other than letters,such as spaces etc.
+		bgt $t3,90, after_if_case
+			#this is executed if the current character is UPPERCASE!
+			addi $t4,$t3,32 # makes contents of $t3 lowercase by subtracting 32, and stores them in $t4
+			sb $t4,0($t1) #stores the altered character in the output array
+			j after_else_case #if the above code is executed, we want to ignore the code inside "else"(after_if_case label)
+		after_if_case:
+			#this is executed if thecurrent character is LOWERCASE!
+			addi $t4,$t3,-32 # makes contents of $t3 uppercase by adding 32, and stores them in $t4
+			sb $t4,0($t1) #store uppercase letter in $t1 (output array)
+		after_else_case:
+		addi $t0,$t0,1 #increments $t0 (input string) to the next element
+		addi $t1,$t1,1 #also increments $t1 (output string)
+		addi $t2,$t2,1 #increments the while loop counter
+		j before_while_case
+	after_while_case:
+	jr $ra
+	
 
 	
 		
@@ -214,4 +274,7 @@ multiplier: # $a0 contains the input_array position, and $a1 contains the output
 #\.						NOTES						    ./#
 #######################################################################################################
 #we could use bne at the end of loops to make them smaller in length
+
+
+
 
