@@ -1,5 +1,4 @@
 #ASSEMBLY CODE FOR LAB 4 IN DIGITAL COMPUTERS, TUC,3RD SEMESTER,2018
-#RAFAEL ELLINITAKIS
 #a program that offers a simple numerical choice user menu, offering 4 functions.
 .data #allocation of space and labels for the strings that need to be printed throughout the program
 triangle_string:	.asciiz	"\n1.Number-Triangle mode\n"
