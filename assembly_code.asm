@@ -1,5 +1,7 @@
 #ASSEMBLY CODE FOR LAB 4 IN DIGITAL COMPUTERS, TUC,3RD SEMESTER,2018
+#RAFAEL ELLINITAKIS
 #a program that offers a simple numerical choice user menu, offering 4 functions.
+##################################################################################################################################
 .data #allocation of space and labels for the strings that need to be printed throughout the program
 triangle_string:	.asciiz	"\n1.Number-Triangle mode\n"
 	 .align 2
@@ -21,7 +23,7 @@ analyze_choice_string: .asciiz "\nYour selection is to check a Number!\n"
 	.align 2
 multiplication_choice_string: .asciiz "\nYour selection is to enter 5 numbers and take back them multiply by 4\n"
 	.align 2
-error_string: .asciiz "\nPleaze enter a number from 1-4\n"
+error_string: .asciiz "\nPleaze enter a number from 1-5\n"
 	.align 2
 next_line: .asciiz "\n" 
 	.align 2
@@ -45,9 +47,9 @@ enter_string: .asciiz "Please enter a string of less-than-100 characters: "
 	.align  2
 	
 .text
-##################################################################
-			#MAIN
-##################################################################			
+##################################################################################################################################
+								#MAIN
+##################################################################################################################################
 main:	
 	loop:	#the MENU is printed below
 		li $v0,4		
@@ -67,7 +69,7 @@ main:
 		syscall		#read a number from keyboard input	
 		move $s0,$v0
 		#beq's represent the switch in C
-		beq $s0,1,choice_loop1
+		beq $s0,1,choice_loop1 # if choice == 1 do [what is in the choice_loop1]
 		beq $s0,2,choice_loop2
 		beq $s0,3,choice_loop3
 		beq $s0,4,choice_loop4
@@ -86,23 +88,22 @@ main:
 	choice_loop2:	#analyze a number
 		li $v0,4		
 		la $a0,analyze_choice_string		
-		syscall	
+		syscall	 # prints that we are in number analyzing mode
 		li $v0,5		
-		syscall	
+		syscall	 # reads the integer to be analyzed
 		move $a0,$v0 #$a0 is the argument passed in check_number function
 		jal check_number
 		beq $v0,$zero,is_even #its essentialy an if/else statement, despite double if in original c lang
 			li $v0,4		
 			la $a0,number_is_odd		
-			syscall	
+			syscall	 #it prints that the number is odd
 			b is_odd #if its odd, it prints it(above) and then exits
 		is_even:
 			li $v0,4		
 			la $a0,number_is_even		
-			syscall	
+			syscall	#it prints that the number is even
 		is_odd: #exit of if/else statement
 		j loop
-		
 	choice_loop3:	#multiply an array of five, by 4
 		li $v0,4		
 		la $a0,multiplication_choice_string		
@@ -110,7 +111,7 @@ main:
 		li $t5,0 #counter for the loop
 		la $t6,input_array #register to store the current array "pointer" (or better,position)
 		before_while_multiplier_input:
-		beq $t5,5,after_while_multiplier_input
+			beq $t5,5,after_while_multiplier_input
 			li $v0,4 #PRINT STRING mode
 			la $a0,enter_a_number
 			syscall #prompts the user to enter a number
@@ -131,19 +132,18 @@ main:
 		li $t5,0 # re-initializes the counter to ZERO
 		la $t6,output_array # sets $t6 to the position ("pointer") of output_array
 		before_while_multiplier_output: #this while loop prints the resulting output_array
-		beq $t5,5,after_while_multiplier_output
+			beq $t5,5,after_while_multiplier_output
 			lw $t7,0($t6) #loads the contents of memory in adress $t6 (some position in the array) to $t7
 			move $a0,$t7 #moves data from $t7 to $a0 to be passed as an argument in the int-printing syscall
 			li $v0,1 # SYSCALL MODE print integer
 			syscall #prints the contents of the array in courrent position
 			li $v0,4 #PRINT STRING mode
 			la $a0,tab
-			syscall #prints 4 spac	es between the printed numbers
+			syscall #prints 4 spaces between the printed numbers
 			addi $t5,$t5,1 #increments counter for the loop
 			addi $t6,$t6,4 #increments our position in the array by four( which is sizeof(int) in the 32-bit-only mips systems)
 			j before_while_multiplier_output
 		after_while_multiplier_output:
-		
 		j loop	#end of the function
 		
 	choice_loop4: #here lies the heroic uppercase/lowercase exchange function summoner
@@ -163,45 +163,42 @@ main:
 		syscall #print the altered string
 		j loop
 	
-		
 #this is activated to print an error message for wrong user input format	
 error_choice_loop:
 	li $v0,4		
 	la $a0,error_string		
-	syscall	
+	syscall	#print that you need to enter data with the right user input format
 	j loop	
 
 #this is activated to just terminate the execution of the program	
 end:	
 	li $v0,4
 	la $a0,end_choice_string
-	syscall
+	syscall # print that the program is being terminated
 	li $v0, 10		
 	syscall#syscall mode 10, exit the program
-	
-##################################################################
- 			#FUNCTIONS
-################################################################## 			
-
+##################################################################################################################################
+ 							#FUNCTIONS
+##################################################################################################################################			
 #this prints a triangle of numbers(1, 1 2, 1 2 3 etc)
 print_triangle: # $a0 contains the number of lines requested
 	li $t0,0 # counter of how many numbers were printed in total(requested return value)
 	li $t1,0 # line number(incremented in the outter loop)
 	li $t9,0 # the column number(incremented inside the nested loop)
 	move $t2,$a0  #copies the passed argument to a temporary,because $a0 will be later altered for syscalls
-	before_while3:
+	before_while3: #the while loop that indicates on which line we're at
 		bge $t1,$t2,after_while3
-			before_while4:
+		before_while4: # the while loop that prints each number
 			bgt $t9,$t1,after_while4
 			li $v0, 1   
-			addi $a0,$t9,1   
+			addi $a0,$t9,1   #prints $t9+1 because $t9 is initialized with zero, and we want 1 in the first column
 			syscall   #printf("%d", t9+1)
 			la $a0,tab
 			li $v0,4
 			syscall  #print a tab(4 spaces)
 			addi $t9,$t9,1  #increments the for (termination) counter for the nested loop
 			addi $t0,$t0,1  #this is the counter of total numbers printed
-		j before_while4
+			j before_while4
 		after_while4:
 		la $a0,next_line
 		li $v0,4
@@ -213,12 +210,15 @@ print_triangle: # $a0 contains the number of lines requested
 	syscall #printf("\n")
 	move $v0,$t0 #it returns the $v0 by convention for subprogram return registers
 	jr $ra #jump back to where the function was called initially ($ra has the right value because of jal)
-
+##################################################################################################################################
 #this checks if a number is odd or even, with logical bitwise AND with 1 (we only care about the last bit of the number)
 check_number: # $a0 contains the number which needs to be checked
 	andi $v0,$a0,1#now $v0 holds the return value
 	jr $ra
-
+#Explanation of check_number: Each odd number can be represented in the form of Even_Number + 1.This means that the last
+#bit of the number *alone* indicates if its even or odd. Because we care only about the last bit, we apply a mask of 1
+#to keep just the last bit of the examined number, and we then return it ($v0=1 -> ODD, $v0=0 ->EVEN)
+##################################################################################################################################
 #this function accepts two array "locations", one for the input array, and one for the output array
 #what it does,is that it multiplies each element of the input by four, and stores it in the output array
 multiplier: # $a0 contains the input_array position, and $a1 contains the output array position
@@ -236,23 +236,24 @@ multiplier: # $a0 contains the input_array position, and $a1 contains the output
 		j before_while_multiplier
 	after_while_multiplier:
 	jr $ra
-	
+##################################################################################################################################
 low_to_upper_case: # $a0 has the location of the input_string, and $a1 the location of the output_string
 	la $t0,($a0) # INPUT string
 	la $t1,($a1) #OUTPUT string
 	li $t2,0 #counter for the loop
 	before_while_case:
-	beq $t2,99,after_while_case
+		beq $t2,99,after_while_case
 		lb $t3,0($t0) # $t3 has the contents of the $t0'th element of the input_string
 		# ASCII TABLE: from 65 to 90, upperacse, from 97 to 122, lowercase
-		#blt $t3,65,after_else_case #if the ASCII code of the character is less than 65, it is not touched
-#TODO: I need to add a way to avoid tweaking the values of characters other than letters,such as spaces etc.
-		bgt $t3,90, after_if_case
+		blt $t3,65,write_as_is #checks if characters are within 0-65.If yes, they are left untouched
+		bgt $t3,122,write_as_is #checks if the characters are between 122-254.If yes, they are also left untouched
+		bgt $t3,90, after_if_case # if 90<$t3<122, branch to after_if_case
 			#this is executed if the current character is UPPERCASE!
 			addi $t4,$t3,32 # makes contents of $t3 lowercase by subtracting 32, and stores them in $t4
 			sb $t4,0($t1) #stores the altered character in the output array
 			j after_else_case #if the above code is executed, we want to ignore the code inside "else"(after_if_case label)
 		after_if_case:
+			blt $t3,97,write_as_is #characters from 90 to 97 are not letters,therefore are not touched
 			#this is executed if thecurrent character is LOWERCASE!
 			addi $t4,$t3,-32 # makes contents of $t3 uppercase by adding 32, and stores them in $t4
 			sb $t4,0($t1) #store uppercase letter in $t1 (output array)
@@ -262,18 +263,9 @@ low_to_upper_case: # $a0 has the location of the input_string, and $a1 the locat
 		addi $t2,$t2,1 #increments the while loop counter
 		j before_while_case
 	after_while_case:
-	jr $ra
-	
-
-	
-		
-
-
-#######################################################################################################
-#\.						NOTES						    ./#
-#######################################################################################################
-#we could use bne at the end of loops to make them smaller in length
-
-
-
+	jr $ra #besides returning to main, it stops the program from executing write_as_is branch if not called
+	write_as_is: # we jump to this branch to save the characters that are not letters without modification
+		sb $t3,0($t1) #we take $t3(input_string) and write it at the adress $t1(output_string)
+		b after_else_case #jumps back to our loop
+##################################################################################################################################
 
