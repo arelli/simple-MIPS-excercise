@@ -56,7 +56,10 @@ int multiplier(int a0, int a1){
     if(t0>=5) goto after_while5;//while(i<5)
         printf(" -Give integer n.%d: ", t0+1);
         scanf("%d", &(*((int*)a0+t0))); //TODO: convert one-line addition to multiline
-        *((int*)a1+t0) = *((int*)a0+t0)+ *((int*)a0+t0)+ *((int*)a0+t0)+ *((int*)a0+t0)+ *((int*)a0+t0);
+        *((int*)a1+t0) = *((int*)a0+t0);
+	*((int*)a1+t0) = *((int*)a1+t0) + *((int*)a0+t0);
+	*((int*)a1+t0) = *((int*)a1+t0) + *((int*)a0+t0);
+	*((int*)a1+t0) = *((int*)a1+t0) + *((int*)a0+t0); 
         t0=t0+1;
     goto before_while5;
     after_while5:
