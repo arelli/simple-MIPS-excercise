@@ -10,3 +10,5 @@ A very simple MIPS assembly program, developed in the MARS MIPS Simulator, that 
 
 <br>The above requirement were given to me by an excercise at my University, as part of the class for the Digital Computer Theory.
 
+<br>Note: <i>clang_code.c</i> is a representation of what the <i>.asm</i> code does, just an a more human-readable form, following some conventions 
+<br> that make work a bit like the original one.
